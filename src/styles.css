@@ -543,7 +543,8 @@ h3 {
 }
 
 .project-preview {
-  min-height: 224px;
+  height: 224px;
+  overflow: hidden;
   border-bottom: 1px solid var(--line);
   background: #edf6f3;
 }
@@ -569,7 +570,9 @@ h3 {
 .preview-vidracaria,
 .preview-swc {
   position: relative;
-  min-height: 190px;
+  height: calc(100% - 34px);
+  min-height: 0;
+  overflow: hidden;
   padding: 20px;
 }
 
@@ -1066,13 +1069,14 @@ h3 {
   }
 
   .project-preview {
-    min-height: 188px;
+    height: 188px;
   }
 
   .preview-clima,
   .preview-vidracaria,
   .preview-swc {
-    min-height: 154px;
+    height: calc(100% - 34px);
+    min-height: 0;
   }
 
   .project-dots {
