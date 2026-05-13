@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import {
   ArrowUpRight,
   BarChart3,
@@ -6,6 +6,8 @@ import {
   Briefcase,
   CalendarDays,
   Car,
+  ChevronLeft,
+  ChevronRight,
   Code2,
   Database,
   Download,
@@ -44,6 +46,8 @@ const iconMap = {
   Server,
   Workflow,
 };
+
+const resumePdfHref = `${import.meta.env.BASE_URL}curriculo-gustavo.pdf`;
 
 function useReveal() {
   useEffect(() => {
@@ -101,7 +105,7 @@ function Header() {
   return (
     <header className="site-header">
       <a className="brand" href="#home" aria-label="Ir para o início">
-        <span>GA</span>
+        <span className="brand-letter" aria-hidden="true">G</span>
       </a>
 
       <nav className="nav-links" aria-label="Navegação principal">
@@ -133,7 +137,7 @@ function Hero() {
               <Mail size={18} aria-hidden="true" />
               Entrar em contato
             </a>
-            <a className="button secondary" href="/curriculo-gustavo.pdf" download>
+            <a className="button secondary" href={resumePdfHref} download>
               <Download size={18} aria-hidden="true" />
               Baixar PDF
             </a>
@@ -315,22 +319,83 @@ function ProjectPreview({ visual, title }) {
 }
 
 function Projects() {
+  const [currentProject, setCurrentProject] = useState(0);
+  const carouselRef = useRef(null);
+  const projectCount = projects.length;
+
+  const scrollToProject = (index) => {
+    if (!projectCount) {
+      return;
+    }
+
+    const nextIndex = (index + projectCount) % projectCount;
+    setCurrentProject(nextIndex);
+    carouselRef.current?.children[nextIndex]?.scrollIntoView({
+      behavior: 'smooth',
+      block: 'nearest',
+      inline: 'center',
+    });
+  };
+
+  const handleProjectScroll = () => {
+    const track = carouselRef.current;
+
+    if (!track) {
+      return;
+    }
+
+    const trackCenter = track.scrollLeft + track.clientWidth / 2;
+    const nextIndex = Array.from(track.children).reduce(
+      (closest, child, index) => {
+        const childCenter = child.offsetLeft + child.offsetWidth / 2;
+        const distance = Math.abs(trackCenter - childCenter);
+
+        return distance < closest.distance ? { index, distance } : closest;
+      },
+      { index: currentProject, distance: Infinity },
+    ).index;
+
+    setCurrentProject((value) => (value === nextIndex ? value : nextIndex));
+  };
+
   return (
     <section className="section-band projects-band" id="projetos">
       <div className="section-shell">
-        <div className="section-heading" data-reveal>
-          <p className="section-kicker">Portfólio</p>
-          <h2>Alguns projetos</h2>
+        <div className="section-heading projects-heading" data-reveal>
+          <div>
+            <p className="section-kicker">Portfólio</p>
+            <h2>Alguns projetos</h2>
+          </div>
+
+          <div className="carousel-controls" aria-label="Controles do carrossel de projetos">
+            <button
+              className="carousel-button"
+              type="button"
+              onClick={() => scrollToProject(currentProject - 1)}
+              aria-label="Projeto anterior"
+            >
+              <ChevronLeft size={19} aria-hidden="true" />
+            </button>
+            <button
+              className="carousel-button"
+              type="button"
+              onClick={() => scrollToProject(currentProject + 1)}
+              aria-label="Próximo projeto"
+            >
+              <ChevronRight size={19} aria-hidden="true" />
+            </button>
+          </div>
         </div>
 
-        <div className="projects-grid">
-          {projects.map((project) => {
+        <div className="projects-grid" ref={carouselRef} onScroll={handleProjectScroll}>
+          {projects.map((project, index) => {
             const primaryHref = project.liveHref || project.repoHref;
             const primaryLabel = project.liveHref ? 'Abrir projeto' : 'Abrir repositório';
-            const hasPrimaryAction = Boolean(project.liveHref);
+            const PrimaryIcon = project.liveHref ? ExternalLink : Github;
+            const hasPrimaryAction = Boolean(primaryHref);
 
             return (
-              <article className="project-card" key={project.title} data-reveal>
+              <article className="project-card" key={project.title} data-project-index={index} data-reveal>
                 <ProjectPreview visual={project.visual} title={project.title} />
 
                 <div className="project-content">
@@ -347,19 +412,34 @@ function Projects() {
                   {hasPrimaryAction && (
                     <div className="project-actions">
                       <a href={primaryHref} target="_blank" rel="noreferrer">
-                        <ExternalLink size={17} aria-hidden="true" />
+                        <PrimaryIcon size={17} aria-hidden="true" />
                         {primaryLabel}
                       </a>
-                      <a href={project.repoHref} target="_blank" rel="noreferrer">
-                        <Github size={17} aria-hidden="true" />
-                        GitHub
-                      </a>
+                      {project.liveHref && (
+                        <a href={project.repoHref} target="_blank" rel="noreferrer">
+                          <Github size={17} aria-hidden="true" />
+                          GitHub
+                        </a>
+                      )}
                     </div>
                   )}
                 </div>
               </article>
             );
           })}
+        </div>
+
+        <div className="project-dots" aria-label="Selecionar projeto">
+          {projects.map((project, index) => (
+            <button
+              className={currentProject === index ? 'active' : undefined}
+              type="button"
+              key={project.title}
+              onClick={() => scrollToProject(index)}
+              aria-label={`Ver projeto ${project.title}`}
+              aria-current={currentProject === index ? 'true' : undefined}
+            />
+          ))}
         </div>
       </div>
     </section>

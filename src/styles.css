@@ -37,6 +37,7 @@ html {
 body {
   min-width: 320px;
   margin: 0;
+  overflow-x: hidden;
   background:
     linear-gradient(rgba(21, 24, 29, 0.035) 1px, transparent 1px),
     linear-gradient(90deg, rgba(21, 24, 29, 0.035) 1px, transparent 1px),
@@ -77,18 +78,44 @@ a {
 }
 
 .brand {
+  position: relative;
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  width: 44px;
-  height: 44px;
-  border: 1px solid var(--ink);
+  flex: 0 0 auto;
+  width: 46px;
+  height: 46px;
+  overflow: hidden;
+  border: 1px solid rgba(21, 24, 29, 0.86);
   border-radius: var(--radius);
-  background: var(--ink);
+  background:
+    linear-gradient(135deg, rgba(15, 118, 110, 0.5), transparent 42%),
+    var(--ink);
   color: var(--paper);
   font-family: 'Syne', Arial, sans-serif;
   font-weight: 800;
+  isolation: isolate;
+  box-shadow: 0 12px 22px rgba(21, 24, 29, 0.16);
   text-decoration: none;
+}
+
+.brand::after {
+  position: absolute;
+  right: 8px;
+  bottom: 8px;
+  width: 15px;
+  height: 3px;
+  border-radius: 999px;
+  background: var(--amber);
+  content: '';
+}
+
+.brand-letter {
+  position: relative;
+  z-index: 1;
+  font-size: 1.48rem;
+  line-height: 1;
+  transform: translateY(-1px);
 }
 
 .nav-links {
@@ -465,6 +492,39 @@ h3 {
   padding: 7px 9px;
 }
 
+.projects-heading {
+  display: flex;
+  max-width: none;
+  align-items: flex-end;
+  justify-content: space-between;
+  gap: 18px;
+}
+
+.carousel-controls,
+.project-dots {
+  display: none;
+}
+
+.carousel-button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 40px;
+  height: 40px;
+  border: 1px solid var(--line);
+  border-radius: var(--radius);
+  background: var(--surface);
+  color: var(--teal-dark);
+  cursor: pointer;
+  transition: transform 180ms ease, border-color 180ms ease, background 180ms ease;
+}
+
+.carousel-button:hover {
+  transform: translateY(-1px);
+  border-color: rgba(15, 118, 110, 0.34);
+  background: var(--teal-soft);
+}
+
 .projects-grid {
   display: grid;
   grid-template-columns: repeat(3, minmax(0, 1fr));
@@ -711,6 +771,22 @@ h3 {
   color: var(--ink);
 }
 
+.project-dots button {
+  width: 8px;
+  height: 8px;
+  padding: 0;
+  border: 0;
+  border-radius: 999px;
+  background: rgba(15, 118, 110, 0.26);
+  cursor: pointer;
+  transition: width 180ms ease, background 180ms ease;
+}
+
+.project-dots button.active {
+  width: 24px;
+  background: var(--teal);
+}
+
 .formation-layout {
   display: grid;
   grid-template-columns: 1.1fr 1.2fr 0.8fr;
@@ -894,14 +970,31 @@ h3 {
 
 @media (max-width: 760px) {
   .site-header {
-    align-items: flex-start;
-    flex-direction: column;
-    padding: 12px 18px;
+    align-items: center;
+    gap: 12px;
+    padding: 10px 14px;
+  }
+
+  .brand {
+    width: 40px;
+    height: 40px;
+  }
+
+  .brand-letter {
+    font-size: 1.3rem;
   }
 
   .nav-links {
-    width: 100%;
+    width: auto;
+    min-width: 0;
+    flex: 1;
+    gap: 6px;
     padding-bottom: 2px;
+  }
+
+  .nav-links a {
+    font-size: 0.84rem;
+    padding: 9px 10px;
   }
 
   .hero,
@@ -910,8 +1003,14 @@ h3 {
     padding-right: 18px;
   }
 
+  .section-band {
+    padding-top: 64px;
+    padding-bottom: 64px;
+  }
+
   .hero {
-    padding-top: 48px;
+    padding-top: 44px;
+    padding-bottom: 28px;
   }
 
   .hero h1 {
@@ -930,9 +1029,58 @@ h3 {
   }
 
   .knowledge-grid,
-  .projects-grid,
   .contact-grid {
     grid-template-columns: 1fr;
+  }
+
+  .projects-heading {
+    align-items: center;
+    margin-bottom: 22px;
+  }
+
+  .carousel-controls {
+    display: flex;
+    flex: 0 0 auto;
+    gap: 8px;
+  }
+
+  .projects-grid {
+    display: flex;
+    gap: 14px;
+    margin: 0 -18px;
+    overflow-x: auto;
+    padding: 2px 18px 12px;
+    scroll-padding-inline: 18px;
+    scroll-snap-type: x mandatory;
+    scrollbar-width: none;
+    -webkit-overflow-scrolling: touch;
+  }
+
+  .projects-grid::-webkit-scrollbar {
+    display: none;
+  }
+
+  .projects-grid .project-card {
+    flex: 0 0 min(86vw, 390px);
+    scroll-snap-align: center;
+  }
+
+  .project-preview {
+    min-height: 188px;
+  }
+
+  .preview-clima,
+  .preview-vidracaria,
+  .preview-swc {
+    min-height: 154px;
+  }
+
+  .project-dots {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    margin-top: 14px;
   }
 
   .timeline::before {
@@ -983,6 +1131,22 @@ h3 {
   .quick-contact span,
   .quick-contact a {
     justify-content: flex-start;
+  }
+
+  .projects-grid .project-card {
+    flex-basis: calc(100vw - 36px);
+  }
+
+  .project-content {
+    padding: 18px;
+  }
+
+  .contact-card {
+    grid-template-columns: 42px minmax(0, 1fr);
+  }
+
+  .contact-card > svg:last-child {
+    display: none;
   }
 
 }
