@@ -143,7 +143,7 @@ export const projects = [
     type: 'Sistema web full stack',
     visual: 'swc',
     liveHref: '',
-    repoHref: 'https://github.com/GustavoAssuncao02/Service-Of-Well-Control',
+    repoHref: '',
     description:
       'Sistema web para gestão de cursos na área de petróleo, com cadastro público de alunos, painel administrativo, cursos, turmas, avaliações, dashboards e calendário.',
     highlights: ['React + Vite', 'Node.js', 'Express', 'MySQL', 'JWT'],
