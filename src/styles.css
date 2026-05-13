@@ -293,7 +293,7 @@ h3 {
   background: var(--surface);
 }
 
-.objective-band {
+.section-band.objective-band {
   background: var(--charcoal);
   color: white;
 }
@@ -302,15 +302,15 @@ h3 {
   color: #8fe1d7;
 }
 
-.knowledge-band {
+.section-band.knowledge-band {
   background: var(--paper-warm);
 }
 
-.projects-band {
+.section-band.projects-band {
   background: var(--surface);
 }
 
-.contact-band {
+.section-band.contact-band {
   background: var(--charcoal);
   color: white;
 }
